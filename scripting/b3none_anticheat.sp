@@ -37,10 +37,14 @@ public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 Command_Ban(int Attacker)
 {
 	char ban_hacker[512];
+	char ban_message[512];
+	new Attacker_name = GetClientOfUserId(Attacker);
 	
-	Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s -1", Attacker);
+	Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s -1", Attacker_name);
 	ServerCommand(ban_hacker);
-	PrintToChatAll("[\x0CB3none_Anticheat\x01] \x02Hacker\x01 detected.");
+	
+	Format(ban_message, sizeof(ban_message), "[\x0CB3none_Anticheat\x01] \x02Hacker\x01 %s detected.", Attacker_name);
+	PrintToChatAll(ban_message);
 }
 
 public OnClientDisconnect()
