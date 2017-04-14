@@ -9,7 +9,7 @@ public Plugin myinfo =
 	name = 			"[Retakes] Anticheat Blatent",
 	author = 		"B3none",
 	description = 		"This should catch all of the blatent cheaters.",
-	version = 		"1.0.0",
+	version = 		"1.0.1",
 	url = 			"www.voidrealitygaming.co.uk"
 };
 
