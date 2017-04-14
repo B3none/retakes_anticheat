@@ -39,6 +39,7 @@ Command_Ban(int Attacker)
 	
 	Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s -1", Attacker);
 	ServerCommand(ban_hacker);
+	PrintToChatAll("[\x0CB3none_Anticheat\x01] \x02Hacker\x01 detected.");
 }
 
 public OnClientDisconnect()
