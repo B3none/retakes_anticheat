@@ -1,5 +1,6 @@
 #include <sourcemod>
 #include <sdktools>
+#include <colors>
 
 int i_HeadshotKillCount[MAXPLAYERS+1];
 
