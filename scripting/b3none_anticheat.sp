@@ -41,6 +41,11 @@ public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 		i_HeadshotKillCount[Attacker] = i_HeadshotKillCount[Attacker] +1;
 	}
 	
+	if(!b_headshot == true)
+	{
+		i_HeadshotKillCount[Attacker] = 0;
+	}
+	
 	if(i_HeadshotKillCount[Attacker] == GetConVarFloat(b3none_ac_kill_limit))
 	{
 		char ban_hacker[512];
