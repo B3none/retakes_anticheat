@@ -4,18 +4,31 @@
 
 int i_HeadshotKillCount[MAXPLAYERS+1];
 
+ConVar	b3none_ac_enabled;
+ConVar	b3none_ac_kill_limit;
+ConVar	b3none_ac_ban_time;
+
 public Plugin myinfo = 
 {
 	name = 			"[Retakes] Anticheat Blatent",
 	author = 		"B3none",
 	description = 		"This should catch all of the blatent cheaters.",
-	version = 		"1.0.4",
+	version = 		"1.1.4",
 	url = 			"www.voidrealitygaming.co.uk"
 };
 
 public void OnPluginStart()
 {
-	HookEvent("player_death", Hook_PlayerDeath);
+	b3none_ac_enabled = CreateConVar("b3none_ac_enabled", "1.0", "Enable = 1.0 | Disable = 0.0", _, true, 0.0, true, 1.0);
+	b3none_ac_kill_limit = CreateConVar("b3none_ac_kill_limit", "30", "How many Headshots must the client get?");
+	b3none_ac_ban_time = CreateConVar("b3none_ac_ban_time", "604800", "How long should the convicted client be banned? (Seconds)");
+	
+	if(GetConVarBool(b3none_ac_enabled))
+	{
+		HookEvent("player_death", Hook_PlayerDeath);
+	}
+	
+	else{return;}
 }
 
 public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
@@ -28,34 +41,33 @@ public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 		i_HeadshotKillCount[Attacker] = i_HeadshotKillCount[Attacker] +1;
 	}
 	
-	if(i_HeadshotKillCount[Attacker] == 30)
+	if(i_HeadshotKillCount[Attacker] == GetConVarFloat(b3none_ac_kill_limit))
 	{
 		char ban_hacker[512];
 		char kick_hacker[512];
 		char ban_message[512];
 		char client_to_ban[512];
-		char time_of_ban[512] = "604800"; // 1 week
 		
 		new Attacker_new = GetClientOfUserId(Attacker);
 		GetClientName(Attacker_new, client_to_ban, sizeof(client_to_ban));
 		
-		Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s %s", client_to_ban, time_of_ban); // Ban offender
+		Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s %s", client_to_ban, GetConVarFloat(b3none_ac_ban_time)); // Ban offender
 		ServerCommand(ban_hacker);
 		
-		Format(kick_hacker, sizeof(kick_hacker), "sm_kick %s", client_to_ban); // Kicked after ban.
-		ServerCommand(kick_hacker);
+		if(IsValidClient(Attacker))
+		{
+			Format(kick_hacker, sizeof(kick_hacker), "sm_kick %s", client_to_ban); // Kicked after ban.
+			ServerCommand(kick_hacker);
+		}
 
 		Format(ban_message, sizeof(ban_message), "[\x0CB3none_Anticheat\x01] \x02Hacker\x01 %s detected.", client_to_ban); // Public shame
 		PrintToChatAll(ban_message);
 	}
 }
 
-public OnClientDisconnect()
+public OnClientDisconnect(int Attacker)
 {
-	char sUserId[64];
-	int iClient = GetClientOfUserId(StringToInt(sUserId));
-	
-	i_HeadshotKillCount[iClient] = 0;
+	i_HeadshotKillCount[Attacker] = 0;
 }
 
 public OnMapEnd()
@@ -65,3 +77,11 @@ public OnMapEnd()
 		i_HeadshotKillCount[i] = 0;
 	}
 }
+
+bool IsValidClient(int Attacker)
+{
+    if (!(0 < Attacker <= MaxClients)) return false;
+    if (!IsClientInGame(Attacker)) return false;
+    if (IsFakeClient(Attacker)) return false;
+    return true;
+} 
