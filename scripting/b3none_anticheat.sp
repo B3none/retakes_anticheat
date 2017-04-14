@@ -9,7 +9,7 @@ public Plugin myinfo =
 	name = 			"[Retakes] Anticheat Blatent",
 	author = 		"B3none",
 	description = 		"This should catch all of the blatent cheaters.",
-	version = 		"1.0.2",
+	version = 		"1.0.3",
 	url = 			"www.voidrealitygaming.co.uk"
 };
 
@@ -30,21 +30,20 @@ public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 	
 	if(i_HeadshotKillCount[Attacker] == 30)
 	{
-		Command_Ban(Attacker);
-	}
-}
+		char ban_hacker[512];
+		char kick_hacker[512];
+		char ban_message[512];
+		new Attacker_name = GetClientOfUserId(Attacker);
 
-Command_Ban(int Attacker)
-{
-	char ban_hacker[512];
-	char ban_message[512];
-	new Attacker_name = GetClientOfUserId(Attacker);
-	
-	Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s 604800", Attacker_name); // 1 week ban.
-	ServerCommand(ban_hacker);
-	
-	Format(ban_message, sizeof(ban_message), "[\x0CB3none_Anticheat\x01] \x02Hacker\x01 %s detected.", Attacker_name);
-	PrintToChatAll(ban_message);
+		Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s 604800", Attacker_name); // 1 week ban.
+		ServerCommand(ban_hacker);
+		
+		Format(kick_hacker, sizeof(kick_hacker), "sm_kick %s", Attacker_name); // Kicked after ban.
+		ServerCommand(kick_hacker);
+
+		Format(ban_message, sizeof(ban_message), "[\x0CB3none_Anticheat\x01] \x02Hacker\x01 %s detected.", Attacker_name);
+		PrintToChatAll(ban_message);
+	}
 }
 
 public OnClientDisconnect()
