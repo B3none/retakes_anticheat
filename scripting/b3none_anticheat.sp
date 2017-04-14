@@ -1,4 +1,5 @@
 #include <sourcemod>
+#include <sdktools>
 
 int i_HeadshotKillCount[MAXPLAYERS+1];
 
@@ -16,25 +17,36 @@ public void OnPluginStart()
 	HookEvent("player_death", Hook_PlayerDeath);
 }
 
-public Hook_PlayerDeath(Handle death, const char name[], bool:DontBroadcast)
+public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 {
-    char attacker[32] = GetEventInt(death, "attacker");
+    new Attacker = GetEventInt(death, "attacker");
 	bool b_headshot = GetEventBool(death, "headshot");
 	
 	if(b_headshot == true)
 	{
-		i_HeadshotKillCount[attacker] = i_HeadshotKillCount[attacker] +1;
+		i_HeadshotKillCount[Attacker] = i_HeadshotKillCount[Attacker] +1;
 	}
 	
-	if(i_HeadshotKillCount[attacker] == 30)
+	if(i_HeadshotKillCount[Attacker] == 30)
 	{
-		ServerCommand("sm_ban %i -1");
+		Command_Ban(Attacker);
 	}
+}
+
+Command_Ban(int Attacker)
+{
+	char ban_hacker[512];
+	
+	Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s -1", Attacker);
+	ServerCommand(ban_hacker);
 }
 
 public OnClientDisconnect()
 {
-	i_HeadshotKillCount[client] = 0;
+	char sUserId[64];
+	int iClient = GetClientOfUserId(StringToInt(sUserId));
+	
+	i_HeadshotKillCount[iClient] = 0;
 }
 
 public OnMapEnd()
