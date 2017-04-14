@@ -20,7 +20,7 @@ public void OnPluginStart()
 {
 	b3none_ac_enabled = CreateConVar("b3none_ac_enabled", "1.0", "Enable = 1.0 | Disable = 0.0", _, true, 0.0, true, 1.0);
 	b3none_ac_kill_limit = CreateConVar("b3none_ac_kill_limit", "30", "How many Headshots must the client get?");
-	b3none_ac_ban_time = CreateConVar("b3none_ac_ban_time", "604800", "How long should the convicted client be banned? (Seconds)");
+	b3none_ac_ban_time = CreateConVar("b3none_ac_ban_time", "10080", "How long should the convicted client be banned? (Minutes)");
 	
 	HookEvent("player_death", Hook_PlayerDeath);
 }
