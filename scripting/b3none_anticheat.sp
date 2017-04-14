@@ -32,12 +32,12 @@ public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 	new Attacker = GetEventInt(death, "attacker");
 	bool b_headshot = GetEventBool(death, "headshot");
 		
-	if(b_headshot == true)
+	if(b_headshot)
 	{
-		i_HeadshotKillCount[Attacker] = i_HeadshotKillCount[Attacker] +1;
+		i_HeadshotKillCount[Attacker]++;
 	}
 		
-	if(!b_headshot == true)
+	if(!b_headshot)
 	{
 		i_HeadshotKillCount[Attacker] = 0;
 	}
