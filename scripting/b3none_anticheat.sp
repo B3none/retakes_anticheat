@@ -9,7 +9,7 @@ public Plugin myinfo =
 	name = 			"[Retakes] Anticheat Blatent",
 	author = 		"B3none",
 	description = 		"This should catch all of the blatent cheaters.",
-	version = 		"1.0.3",
+	version = 		"1.0.4",
 	url = 			"www.voidrealitygaming.co.uk"
 };
 
@@ -28,24 +28,24 @@ public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 		i_HeadshotKillCount[Attacker] = i_HeadshotKillCount[Attacker] +1;
 	}
 	
-	if(i_HeadshotKillCount[Attacker] == 2)
+	if(i_HeadshotKillCount[Attacker] == 30)
 	{
 		char ban_hacker[512];
 		char kick_hacker[512];
 		char ban_message[512];
 		char client_to_ban[512];
-		new Attacker_name = GetClientOfUserId(Attacker);
-		GetClientName(Attacker_name, client_to_ban, sizeof(client_to_ban));
+		char time_of_ban[512] = "604800"; // 1 week
 		
+		new Attacker_new = GetClientOfUserId(Attacker);
+		GetClientName(Attacker_new, client_to_ban, sizeof(client_to_ban));
 		
-		
-		Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s 604800", client_to_ban); // 1 week ban.
+		Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s %s", client_to_ban, time_of_ban); // Ban offender
 		ServerCommand(ban_hacker);
 		
 		Format(kick_hacker, sizeof(kick_hacker), "sm_kick %s", client_to_ban); // Kicked after ban.
 		ServerCommand(kick_hacker);
 
-		Format(ban_message, sizeof(ban_message), "[\x0CB3none_Anticheat\x01] \x02Hacker\x01 %s detected.", Attacker_name);
+		Format(ban_message, sizeof(ban_message), "[\x0CB3none_Anticheat\x01] \x02Hacker\x01 %s detected.", client_to_ban); // Public shame
 		PrintToChatAll(ban_message);
 	}
 }
