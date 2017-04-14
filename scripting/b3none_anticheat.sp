@@ -1,12 +1,11 @@
-#include <sourcemod>
-#include <sdktools>
-#include <csgocolors>
+#include 	<sourcemod>
+#include	<sdktools>
 
 int i_HeadshotKillCount[MAXPLAYERS+1];
 
-ConVar	b3none_ac_enabled;
-ConVar	b3none_ac_kill_limit;
-ConVar	b3none_ac_ban_time;
+ConVar		b3none_ac_enabled;
+ConVar		b3none_ac_kill_limit;
+ConVar		b3none_ac_ban_time;
 
 public Plugin myinfo = 
 {
@@ -23,29 +22,26 @@ public void OnPluginStart()
 	b3none_ac_kill_limit = CreateConVar("b3none_ac_kill_limit", "30", "How many Headshots must the client get?");
 	b3none_ac_ban_time = CreateConVar("b3none_ac_ban_time", "604800", "How long should the convicted client be banned? (Seconds)");
 	
-	if(GetConVarBool(b3none_ac_enabled))
-	{
-		HookEvent("player_death", Hook_PlayerDeath);
-	}
-	
-	else{return;}
+	HookEvent("player_death", Hook_PlayerDeath);
 }
 
 public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 {
+	if(!GetConVarBool(b3none_ac_enabled) == true){return;}
+	
 	new Attacker = GetEventInt(death, "attacker");
 	bool b_headshot = GetEventBool(death, "headshot");
-	
+		
 	if(b_headshot == true)
 	{
 		i_HeadshotKillCount[Attacker] = i_HeadshotKillCount[Attacker] +1;
 	}
-	
+		
 	if(!b_headshot == true)
 	{
 		i_HeadshotKillCount[Attacker] = 0;
 	}
-	
+		
 	if(i_HeadshotKillCount[Attacker] == GetConVarFloat(b3none_ac_kill_limit))
 	{
 		char ban_hacker[512];
@@ -58,13 +54,13 @@ public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 		
 		Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s %s", client_to_ban, GetConVarFloat(b3none_ac_ban_time)); // Ban offender
 		ServerCommand(ban_hacker);
-		
+	
 		if(IsValidClient(Attacker))
 		{
 			Format(kick_hacker, sizeof(kick_hacker), "sm_kick %s", client_to_ban); // Kicked after ban.
 			ServerCommand(kick_hacker);
 		}
-
+		
 		Format(ban_message, sizeof(ban_message), "[\x0CB3none_Anticheat\x01] \x02Hacker\x01 %s detected.", client_to_ban); // Public shame
 		PrintToChatAll(ban_message);
 	}
