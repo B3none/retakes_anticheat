@@ -1,6 +1,6 @@
 #include <sourcemod>
 #include <sdktools>
-#include <colors>
+#include <csgocolors>
 
 int i_HeadshotKillCount[MAXPLAYERS+1];
 
@@ -8,7 +8,7 @@ public Plugin myinfo =
 {
 	name = 			"[Retakes] Anticheat Blatent",
 	author = 		"B3none",
-	description = 	"This should catch all of the blatent cheaters.",
+	description = 		"This should catch all of the blatent cheaters.",
 	version = 		"1.0.0",
 	url = 			"www.voidrealitygaming.co.uk"
 };
@@ -20,7 +20,7 @@ public void OnPluginStart()
 
 public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 {
-    new Attacker = GetEventInt(death, "attacker");
+	new Attacker = GetEventInt(death, "attacker");
 	bool b_headshot = GetEventBool(death, "headshot");
 	
 	if(b_headshot == true)
