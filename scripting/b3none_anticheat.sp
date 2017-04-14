@@ -28,17 +28,21 @@ public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 		i_HeadshotKillCount[Attacker] = i_HeadshotKillCount[Attacker] +1;
 	}
 	
-	if(i_HeadshotKillCount[Attacker] == 30)
+	if(i_HeadshotKillCount[Attacker] == 2)
 	{
 		char ban_hacker[512];
 		char kick_hacker[512];
 		char ban_message[512];
+		char client_to_ban[512];
 		new Attacker_name = GetClientOfUserId(Attacker);
-
-		Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s 604800", Attacker_name); // 1 week ban.
+		GetClientName(Attacker_name, client_to_ban, sizeof(client_to_ban));
+		
+		
+		
+		Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s 604800", client_to_ban); // 1 week ban.
 		ServerCommand(ban_hacker);
 		
-		Format(kick_hacker, sizeof(kick_hacker), "sm_kick %s", Attacker_name); // Kicked after ban.
+		Format(kick_hacker, sizeof(kick_hacker), "sm_kick %s", client_to_ban); // Kicked after ban.
 		ServerCommand(kick_hacker);
 
 		Format(ban_message, sizeof(ban_message), "[\x0CB3none_Anticheat\x01] \x02Hacker\x01 %s detected.", Attacker_name);
