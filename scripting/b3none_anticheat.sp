@@ -27,7 +27,7 @@ public void OnPluginStart()
 
 public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
 {
-	if(!GetConVarBool(b3none_ac_enabled) == true){return;}
+	if(!GetConVarBool(b3none_ac_enabled)){return;}
 	
 	new Attacker = GetEventInt(death, "attacker");
 	bool b_headshot = GetEventBool(death, "headshot");
