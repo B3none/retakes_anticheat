@@ -1,7 +1,7 @@
 /*
 / Optimisations by Xines http://steamcommunity.com/profiles/76561197996957454
 / Code written by B3none http://steamcommunity.com/profiles/76561198028510846
-/*
+*/
 
 #include <sourcemod>
 #include <sdktools>
