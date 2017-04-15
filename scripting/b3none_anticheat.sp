@@ -1,88 +1,61 @@
-#include 	<sourcemod>
-#include	<sdktools>
+/*
+/ Optimisations by Xines http://steamcommunity.com/profiles/76561197996957454
+/ Code written by B3none http://steamcommunity.com/profiles/76561198028510846
+/*
+
+#include <sourcemod>
+#include <sdktools>
 
 int i_HeadshotKillCount[MAXPLAYERS+1];
-
-ConVar		b3none_ac_enabled;
-ConVar		b3none_ac_kill_limit;
-ConVar		b3none_ac_ban_time;
+ConVar b3none_ac_enabled;
+ConVar b3none_ac_kill_limit;
+ConVar b3none_ac_ban_time;
 
 public Plugin myinfo = 
 {
-	name = 			"[Retakes] Anticheat Blatent",
-	author = 		"B3none",
-	description = 		"This should catch all of the blatent cheaters.",
-	version = 		"1.1.4",
-	url = 			"www.voidrealitygaming.co.uk"
+    name =            "[Retakes] Anticheat Blatent",
+    author =         "B3none",
+    description =    "This should catch all of the blatent cheaters.",
+    version =         "1.1.5",
+    url =             "www.voidrealitygaming.co.uk"
 };
 
 public void OnPluginStart()
 {
-	b3none_ac_enabled = CreateConVar("b3none_ac_enabled", "1.0", "Enable = 1.0 | Disable = 0.0", _, true, 0.0, true, 1.0);
-	b3none_ac_kill_limit = CreateConVar("b3none_ac_kill_limit", "30", "How many Headshots must the client get?");
-	b3none_ac_ban_time = CreateConVar("b3none_ac_ban_time", "10080", "How long should the convicted client be banned? (Minutes)");
-	
-	HookEvent("player_death", Hook_PlayerDeath);
+    b3none_ac_enabled = CreateConVar("b3none_ac_enabled", "1", "Enable = 1 | Disable = 0", _, true, 0.0, true, 1.0);
+    b3none_ac_kill_limit = CreateConVar("b3none_ac_kill_limit", "30", "How many Headshots must the client get?");
+    b3none_ac_ban_time = CreateConVar("b3none_ac_ban_time", "10080", "How long should the convicted client be banned? (Minutes)");
+    
+    HookEvent("player_death", Hook_PlayerDeath);
 }
 
-public Hook_PlayerDeath(Handle death, const String:name[], bool:DontBroadcast)
+public void OnClientPostAdminCheck(int client)
 {
-	if(!GetConVarBool(b3none_ac_enabled)){return;}
-	
-	new Attacker = GetEventInt(death, "attacker");
-	bool b_headshot = GetEventBool(death, "headshot");
-		
-	if(b_headshot)
-	{
-		i_HeadshotKillCount[Attacker]++;
-	}
-		
-	if(!b_headshot)
-	{
-		i_HeadshotKillCount[Attacker] = 0;
-	}
-		
-	if(i_HeadshotKillCount[Attacker] == GetConVarFloat(b3none_ac_kill_limit))
-	{
-		char ban_hacker[512];
-		char kick_hacker[512];
-		char ban_message[512];
-		char client_to_ban[512];
-		
-		new Attacker_new = GetClientOfUserId(Attacker);
-		GetClientName(Attacker_new, client_to_ban, sizeof(client_to_ban));
-		
-		Format(ban_hacker, sizeof(ban_hacker), "sm_ban %s %s", client_to_ban, GetConVarFloat(b3none_ac_ban_time)); // Ban offender
-		ServerCommand(ban_hacker);
-	
-		if(IsValidClient(Attacker))
-		{
-			Format(kick_hacker, sizeof(kick_hacker), "sm_kick %s", client_to_ban); // Kicked after ban.
-			ServerCommand(kick_hacker);
-		}
-		
-		Format(ban_message, sizeof(ban_message), "[\x0CB3none_Anticheat\x01] \x02Hacker\x01 %s detected.", client_to_ban); // Public shame
-		PrintToChatAll(ban_message);
-	}
+    i_HeadshotKillCount[client] = 0;
 }
 
-public OnClientDisconnect(int Attacker)
+public Action Hook_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
-	i_HeadshotKillCount[Attacker] = 0;
+    if(!b3none_ac_enabled.BoolValue) return Plugin_Continue;
+    
+    int Attacker = GetClientOfUserId(event.GetInt("attacker"));
+    if(IsValidClient(Attacker))
+    {
+        if (event.GetBool("headshot")) i_HeadshotKillCount[Attacker]++;
+        else i_HeadshotKillCount[Attacker] = 0;
+
+        if(i_HeadshotKillCount[Attacker] == b3none_ac_kill_limit.IntValue)
+        {
+            ServerCommand("sm_ban %N %i", Attacker, b3none_ac_ban_time.IntValue);
+            KickClient(Attacker, "You were permanently banned from the server.");
+            PrintToChatAll("[\x0CB3none_Anticheat\x01] \x02Hacker\x01 %N detected.", Attacker);
+        }
+    }
+    return Plugin_Continue;
 }
 
-public OnMapEnd()
+/** Stocks **/
+stock bool IsValidClient(int client)
 {
-	for(int i=1; i<=MAXPLAYERS+1; i++)
-	{
-		i_HeadshotKillCount[i] = 0;
-	}
-}
-
-bool IsValidClient(int Attacker)
-{
-    if (!(0 < Attacker <= MaxClients)) return false;
-    if (!IsClientInGame(Attacker)) return false;
-    if (IsFakeClient(Attacker)) return false;
-    return true;
+    return (1 <= client <= MaxClients && IsClientInGame(client) && !IsFakeClient(client));
 } 
