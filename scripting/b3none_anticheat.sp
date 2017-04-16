@@ -5,6 +5,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#pragma newdecls required
 
 int i_HeadshotKillCount[MAXPLAYERS+1];
 ConVar b3none_ac_enabled;
