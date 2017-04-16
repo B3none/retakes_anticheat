@@ -46,7 +46,7 @@ public Action Hook_PlayerDeath(Event event, const char[] name, bool dontBroadcas
 
         if(i_HeadshotKillCount[Attacker] == b3none_ac_kill_limit.IntValue)
         {
-            ServerCommand("sm_ban %N %i", Attacker, b3none_ac_ban_time.IntValue);
+            ServerCommand("sm_ban #%i %i", GetClientUserId(Attacker), b3none_ac_ban_time.IntValue); // Code by domino_
             KickClient(Attacker, "You were permanently banned from the server.");
             PrintToChatAll("[\x0CB3none_Anticheat\x01] \x02Hacker\x01 %N detected.", Attacker);
         }
