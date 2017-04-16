@@ -14,8 +14,8 @@ ConVar b3none_ac_ban_reason;
 public Plugin myinfo = 
 {
     name =            "[Retakes] Anticheat Blatent",
-    author =         "B3none, Xines",
-    description =    "This should catch all of the blatent cheaters.",
+    author =          "B3none, Xines",
+    description =     "This should catch all of the blatent cheaters.",
     version =         "1.1.5",
     url =             "www.voidrealitygaming.co.uk"
 };
